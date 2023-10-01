@@ -37,37 +37,38 @@ const OnboardingScreen = ({ navigation }) => {
           backgroundColor: "#a6e4d0",
           image: (
             <Image
-              source={require("../assets/image1.jpg")}
+              source={require("../assets/image1.png")}
               style={{ width: 300, height: 300 }}
               resizeMode="contain"
             />
           ),
-          title: "Onboarding 1",
-          subtitle: "This is the first onboarding screen.",
+          title: "Start Your Learning Journey",
+          subtitle: "Dive into a world of knowledge with our study app.",
         },
         {
           backgroundColor: "#fdeb93",
           image: (
             <Image
-              source={require("../assets/image2.jpg")}
+              source={require("../assets/image2.png")}
               style={{ width: 300, height: 300 }}
               resizeMode="contain"
             />
           ),
-          title: "Onboarding 2",
-          subtitle: "This is the second onboarding screen.",
+          title: "Tailored Study Plans",
+          subtitle: "Create custom study plans that suit your pace and goals.",
         },
         {
           backgroundColor: "#e9bcbe",
           image: (
             <Image
-              source={require("../assets/image3.jpg")}
+              source={require("../assets/image3.png")}
               style={{ width: 300, height: 300 }}
               resizeMode="contain"
             />
           ),
-          title: "Onboarding 3",
-          subtitle: "This is the third onboarding screen.",
+          title: "Interactive Learning",
+          subtitle:
+            "Engage with interactive content for a better understanding.",
         },
       ]}
     />

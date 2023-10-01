@@ -24,6 +24,10 @@ import { I18nManager } from "react-native";
 import * as Localization from "expo-localization";
 import i18n from "./locales/i18n";
 import LanguageContext from "./context/LanguageContext";
+import WithdrawNow from "./screens/WithdrawNow";
+import WithdrawHistory from "./screens/WithdrawHistory";
+import Privacy from "./screens/Privacy";
+import Contact from "./screens/Contact";
 
 const Stack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -79,6 +83,30 @@ function MainStackNavigator() {
         name="Quiz"
         component={Quiz}
         options={{ headerTitle: "Quiz" }}
+      />
+
+      <Stack.Screen
+        name="WithdrawNow"
+        component={WithdrawNow}
+        options={{ headerTitle: "Withdraw Now" }}
+      />
+
+      <Stack.Screen
+        name="WithdrawHistory"
+        component={WithdrawHistory}
+        options={{ headerTitle: "Withdraw History" }}
+      />
+
+      <Stack.Screen
+        name="Contact"
+        component={Contact}
+        options={{ headerTitle: "Contact" }}
+      />
+
+      <Stack.Screen
+        name="Privacy"
+        component={Privacy}
+        options={{ headerTitle: "Privacy" }}
       />
     </Stack.Navigator>
   );

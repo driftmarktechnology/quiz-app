@@ -3,10 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
+  Modal,
   TouchableOpacity,
   Image,
   Alert,
   ScrollView,
+  Share,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {
@@ -19,9 +21,13 @@ import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo's v
 import { auth, getFirestore } from "../config/firebase";
 import i18n from "../locales/i18n"; // Adjust the path according to where i18n.js is located
 import LanguageContext from "../context/LanguageContext";
+import { useNavigation } from "@react-navigation/native";
 
 function Settings() {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.locale);
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+
   const { setLanguage } = useContext(LanguageContext);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [profileImageUrl, setProfileImageUrl] = useState(
@@ -109,6 +115,37 @@ function Settings() {
     );
   };
 
+  const redirect = () => {
+    navigation.navigate("WithdrawNow");
+  };
+
+  const redirectHistory = () => {
+    navigation.navigate("WithdrawHistory");
+  };
+
+  const redirectPrivacy = () => {
+    navigation.navigate("Privacy");
+  };
+
+  const redirectToContactUs = () => {
+    navigation.navigate("Contact");
+  };
+
+  const handleLogout = () => {
+    setModalVisible(true);
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: "Share this app with your friends!",
+        // Here, you can also add a URL, title, etc.
+      });
+    } catch (error) {
+      alert("Oops, something went wrong!", error);
+    }
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
       <View style={styles.container}>
@@ -136,21 +173,86 @@ function Settings() {
           <Card title={i18n.t("Color Mode")} iconName="ios-color-palette" />
         </View>
         <View style={styles.row}>
-          <Card title={i18n.t("Privacy Policy")} iconName="ios-lock-closed" />
+          <Card
+            title={i18n.t("Privacy Policy")}
+            iconName="ios-lock-closed"
+            onPress={redirectPrivacy}
+          />
           <Card
             title={i18n.t("Terms & Conditions")}
             iconName="ios-document-text"
+            onPress={redirectPrivacy}
           />
         </View>
         <View style={styles.row}>
           <Card title={i18n.t("Rate")} iconName="ios-star" />
-          <Card title={i18n.t("Share")} iconName="ios-share" />
+          <Card
+            title={i18n.t("Share")}
+            iconName="ios-share"
+            onPress={handleShare}
+          />
         </View>
         <View style={styles.row}>
-          <Card title={i18n.t("Withdraw Now")} iconName="wallet" />
-          <Card title={i18n.t("Withdraw History")} iconName="time" />
+          <Card
+            title={i18n.t("Withdraw Now")}
+            iconName="wallet"
+            onPress={redirect}
+          />
+          <Card
+            title={i18n.t("Withdraw History")}
+            onPress={redirectHistory}
+            iconName="time"
+          />
+        </View>
+        <View style={styles.row}>
+          <Card
+            title={i18n.t("ContactUs")}
+            iconName="ios-mail"
+            onPress={redirectToContactUs}
+          />
+          <Card
+            title={i18n.t("Logout")}
+            iconName="ios-exit"
+            onPress={handleLogout}
+          />
         </View>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Are you sure you want to logout?
+            </Text>
+
+            <TouchableOpacity
+              style={{ ...styles.button, backgroundColor: "red" }}
+              onPress={() => {
+                // Here you can implement your logout logic, maybe clear user data, etc.
+                // Then navigate to the login screen or whatever you prefer.
+                setModalVisible(false);
+              }}
+            >
+              <Text style={styles.buttonText}>Yes</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                setModalVisible(false);
+              }}
+            >
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -224,6 +326,46 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontSize: 16,
     fontWeight: "600",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalView: {
+    width: "80%",
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  button: {
+    backgroundColor: "#3498db",
+    padding: 15,
+    borderRadius: 12,
+    alignItems: "center",
+    width: "80%",
+    margin: 10,
+  },
+  buttonText: {
+    fontSize: 18,
+    color: "#fff",
   },
 });
 
