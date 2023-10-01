@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./config/firebase";
 import Login from "./screens/Login";
 import Signup from "./screens/Signup";
-import Chat from "./screens/Chat";
+import Questions from "./screens/Questions";
 import Home from "./screens/Home";
 import { Ionicons } from "@expo/vector-icons";
 import Books from "./screens/Books";
@@ -123,8 +123,8 @@ function ChatBottomTabNavigator() {
 
           if (route.name === i18n.t("Home")) {
             iconName = focused ? "ios-home" : "ios-home-outline";
-          } else if (route.name === "Chat") {
-            iconName = focused ? "ios-chatbubble" : "ios-chatbubble-outline";
+          } else if (route.name === "Questions") {
+            iconName = focused ? "help-circle" : "help-circle-outline";
           } else if (route.name === i18n.t("Settings")) {
             iconName = focused ? "ios-settings" : "ios-settings-outline";
           } else if (route.name === i18n.t("Notifications")) {
@@ -142,7 +142,7 @@ function ChatBottomTabNavigator() {
       }}
     >
       <BottomTab.Screen name={i18n.t("Home")} component={Home} />
-      <BottomTab.Screen name="Chat" component={Chat} />
+      <BottomTab.Screen name="Questions" component={Questions} />
       <BottomTab.Screen
         name={i18n.t("Notifications")}
         component={Notifications}

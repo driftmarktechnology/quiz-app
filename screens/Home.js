@@ -34,7 +34,7 @@ export default function Home() {
 
   const ICONS = [
     "ios-book-outline",
-    "ios-job-outline",
+    "briefcase-outline",
     "ios-settings-outline",
     "ios-notifications-outline",
     "ios-person-outline",
