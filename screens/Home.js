@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import Carousel from "react-native-snap-carousel";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
@@ -21,6 +22,7 @@ const { width: screenWidth } = Dimensions.get("window");
 export default function Home() {
   const navigation = useNavigation();
   const { language } = useContext(LanguageContext);
+  const [isLoading, setIsLoading] = useState(true); // State to track data fetching
 
   useEffect(() => {
     i18n.locale = language;
@@ -40,11 +42,13 @@ export default function Home() {
 
   useEffect(() => {
     const fetchBanners = async () => {
+      setIsLoading(true); // Start loading
       const db = getFirestore();
       const bannerCollection = collection(db, "banners");
       const bannerSnapshot = await getDocs(bannerCollection);
       const banners = bannerSnapshot.docs.map((doc) => doc.data().url);
       setBannerImages(...banners);
+      setIsLoading(false); // End loading
     };
 
     fetchBanners();
@@ -57,6 +61,14 @@ export default function Home() {
       resizeMode="cover"
     />
   );
+
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#3498db" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

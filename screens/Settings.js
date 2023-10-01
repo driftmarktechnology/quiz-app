@@ -22,11 +22,23 @@ import { auth, getFirestore } from "../config/firebase";
 import i18n from "../locales/i18n"; // Adjust the path according to where i18n.js is located
 import LanguageContext from "../context/LanguageContext";
 import { useNavigation } from "@react-navigation/native";
+import ThemeContext from "../context/ThemeContext";
+import { signOut } from "firebase/auth";
 
 function Settings() {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.locale);
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  const isLightTheme = theme === "light";
+
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      padding: 20,
+      backgroundColor: isLightTheme ? "#f5f5f5" : "#121212",
+    },
+  });
 
   const { setLanguage } = useContext(LanguageContext);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -146,8 +158,35 @@ function Settings() {
     }
   };
 
+  const Card = ({ title, iconName, onPress }) => (
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      {iconName && <Ionicons name={iconName} size={24} color="black" />}
+      <Text style={styles.cardTitle}>{title}</Text>
+    </TouchableOpacity>
+  );
+
+  function rateApp() {
+    const googlePackageName = "com.quiz-app"; // e.g. com.myapp
+    const link = `market://details?id=${googlePackageName}`;
+    console.log(link, "link");
+
+    // Linking.canOpenURL(link)
+    //   .then((supported) => {
+    //     if (!supported) {
+    //       console.log("Can't handle URL: " + link);
+    //     } else {
+    //       return Linking.openURL(link);
+    //     }
+    //   })
+    //   .catch((err) => console.error("An error occurred", err));
+  }
+
+  const onSignOut = () => {
+    signOut(auth).catch((error) => console.log("Error logging out: ", error));
+  };
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
+    <ScrollView style={dynamicStyles.container}>
       <View style={styles.container}>
         <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
           <Image
@@ -164,15 +203,18 @@ function Settings() {
         <Text style={styles.accountBalance}>
           {i18n.t("YourAccountBalance")} : 100 ₹
         </Text>
-        <View style={styles.row}>
+        <View style={styles.settingsGrid}>
+          {/* Note: You can loop through a settings array to generate these cards, making your code more concise. */}
           <Card
             title={i18n.t("Language")}
             iconName="ios-globe"
             onPress={toggleLanguage}
           />
-          <Card title={i18n.t("Color Mode")} iconName="ios-color-palette" />
-        </View>
-        <View style={styles.row}>
+          <Card
+            title={i18n.t("Color Mode")}
+            iconName="ios-color-palette"
+            onPress={toggleTheme}
+          />
           <Card
             title={i18n.t("Privacy Policy")}
             iconName="ios-lock-closed"
@@ -183,16 +225,12 @@ function Settings() {
             iconName="ios-document-text"
             onPress={redirectPrivacy}
           />
-        </View>
-        <View style={styles.row}>
-          <Card title={i18n.t("Rate")} iconName="ios-star" />
+          <Card title={i18n.t("Rate")} iconName="ios-star" onPress={rateApp} />
           <Card
             title={i18n.t("Share")}
             iconName="ios-share"
             onPress={handleShare}
           />
-        </View>
-        <View style={styles.row}>
           <Card
             title={i18n.t("Withdraw Now")}
             iconName="wallet"
@@ -200,11 +238,9 @@ function Settings() {
           />
           <Card
             title={i18n.t("Withdraw History")}
-            onPress={redirectHistory}
             iconName="time"
+            onPress={redirectHistory}
           />
-        </View>
-        <View style={styles.row}>
           <Card
             title={i18n.t("ContactUs")}
             iconName="ios-mail"
@@ -234,6 +270,7 @@ function Settings() {
             <TouchableOpacity
               style={{ ...styles.button, backgroundColor: "red" }}
               onPress={() => {
+                onSignOut();
                 // Here you can implement your logout logic, maybe clear user data, etc.
                 // Then navigate to the login screen or whatever you prefer.
                 setModalVisible(false);
@@ -257,17 +294,17 @@ function Settings() {
   );
 }
 
-const Card = ({ title, iconName, onPress }) => (
-  <TouchableOpacity style={styles.card} onPress={onPress}>
-    {iconName && <Ionicons name={iconName} size={24} color="black" />}
-    <Text style={styles.cardTitle}>{title}</Text>
-  </TouchableOpacity>
-);
-
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    flex: 1,
     backgroundColor: "#f5f5f5",
+  },
+  profileSection: {
+    backgroundColor: "#FFFFFF",
+    padding: 20,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
   },
   card: {
     width: "48%",
@@ -288,21 +325,20 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     marginTop: 10,
-    fontSize: 18,
-    fontWeight: "500",
+    fontSize: 16,
+    fontWeight: "600",
   },
   profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75, // To make it rounded
-    alignSelf: "center",
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     marginBottom: 10,
   },
   accountBalance: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 20,
+    marginTop: 10,
   },
   row: {
     flexDirection: "row",
@@ -315,17 +351,17 @@ const styles = StyleSheet.create({
   },
   editIcon: {
     position: "absolute",
-    bottom: 10,
+    bottom: 0,
     right: 10,
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 2,
+    backgroundColor: "#e7e7e7",
+    borderRadius: 15,
+    padding: 5,
   },
   progressText: {
+    padding: 20,
     textAlign: "center",
-    marginVertical: 10,
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
   centeredView: {
     flex: 1,
@@ -366,6 +402,12 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     color: "#fff",
+  },
+  settingsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    padding: 10,
   },
 });
 

@@ -28,6 +28,8 @@ import WithdrawNow from "./screens/WithdrawNow";
 import WithdrawHistory from "./screens/WithdrawHistory";
 import Privacy from "./screens/Privacy";
 import Contact from "./screens/Contact";
+import ThemeProvider from "./context/ThemeProvider";
+import ForgotPassword from "./screens/ ForgotPassword";
 
 const Stack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -155,6 +157,7 @@ function AuthStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
     </Stack.Navigator>
   );
 }
@@ -213,7 +216,9 @@ export default function App() {
     return (
       <AuthenticatedUserProvider>
         <LanguageContext.Provider value={{ language, setLanguage }}>
-          <RootNavigator />
+          <ThemeProvider>
+            <RootNavigator />
+          </ThemeProvider>
         </LanguageContext.Provider>
       </AuthenticatedUserProvider>
     );
