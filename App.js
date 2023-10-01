@@ -14,24 +14,16 @@ import Books from "./screens/Books";
 import Terms from "./screens/Terms";
 import Subject from "./screens/Subject";
 import Medium from "./screens/Medium";
+import Settings from "./screens/Settings";
+import Notifications from "./screens/Notifications";
 import PdfViewer from "./screens/PdfViewer";
 import Quiz from "./screens/Quiz";
+import OnboardingScreen from "./screens/Onboarding";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();
 const AuthenticatedUserContext = createContext({});
-
-const Settings = () => (
-  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <Text>Settings Screen</Text>
-  </View>
-);
-
-const Notifications = () => (
-  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <Text>Notifications Screen</Text>
-  </View>
-);
 
 const AuthenticatedUserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -162,9 +154,29 @@ function RootNavigator() {
 }
 
 export default function App() {
-  return (
-    <AuthenticatedUserProvider>
-      <RootNavigator />
-    </AuthenticatedUserProvider>
-  );
+  const [isFirstLaunch, setIsFirstLaunch] = useState(null);
+  useEffect(() => {
+    // Here, you can check from AsyncStorage if the user has launched the app before.
+    // I'm assuming the key is 'alreadyLaunched'. If they haven't, display Onboarding.
+
+    AsyncStorage.getItem("alreadyLaunched").then((value) => {
+      if (value == null) {
+        AsyncStorage.setItem("alreadyLaunched", "true");
+        setIsFirstLaunch(true);
+      } else {
+        setIsFirstLaunch(false);
+      }
+    });
+  }, []);
+  if (isFirstLaunch === null) {
+    return null;
+  } else if (isFirstLaunch === true) {
+    return <OnboardingScreen />;
+  } else {
+    return (
+      <AuthenticatedUserProvider>
+        <RootNavigator />
+      </AuthenticatedUserProvider>
+    );
+  }
 }
