@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+  ScrollView,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {
   getStorage,
@@ -9,26 +17,35 @@ import {
 } from "firebase/storage";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo's vector icons
 import { auth, getFirestore } from "../config/firebase";
+import i18n from "../locales/i18n"; // Adjust the path according to where i18n.js is located
+import LanguageContext from "../context/LanguageContext";
 
 function Settings() {
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.locale);
+  const { setLanguage } = useContext(LanguageContext);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [profileImageUrl, setProfileImageUrl] = useState(
     "https://www.w3schools.com/w3images/avatar2.png"
   );
 
   useEffect(() => {
-    // Fetch the image URL once when the component mounts
     fetchProfileImage();
   }, []);
+
+  const toggleLanguage = () => {
+    const newLanguage = currentLanguage === "en" ? "ta" : "en";
+    setCurrentLanguage(newLanguage);
+    setLanguage(newLanguage);
+    i18n.locale = newLanguage;
+  };
 
   const fetchProfileImage = async () => {
     const db = getFirestore();
     const email = auth.currentUser.email;
-
     const docRef = doc(db, "users", email);
     const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
+    if (docSnap.exists() && docSnap.data().profileImageUrl) {
       setProfileImageUrl(docSnap.data().profileImageUrl);
     }
   };
@@ -61,37 +78,29 @@ function Settings() {
   const uploadImageToFirebase = async (uri) => {
     const response = await fetch(uri);
     const blob = await response.blob();
-    const filename = new Date().getTime(); // Just a simple timestamp as a name
-
+    const filename = new Date().getTime();
     const storage = getStorage();
-
     const storageRef = ref(storage, `profile_images/${filename}`);
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
     uploadTask.on(
       "state_changed",
       (snapshot) => {
-        // You can use this part for tracking progress
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log("Upload is " + progress + "% done");
         setUploadProgress(progress);
       },
       (error) => {
-        // Handle unsuccessful uploads
         console.error(error);
         alert("There was an issue uploading the image. Please try again.");
       },
       () => {
-        // Handle successful uploads on complete
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log("File available at", downloadURL);
           setProfileImageUrl(downloadURL);
-
-          // Save this imageURL to Firestore under the user's email
           const db = getFirestore();
           const email = auth.currentUser.email;
-
           setDoc(doc(db, "users", email), {
             profileImageUrl: downloadURL,
           });
@@ -101,38 +110,53 @@ function Settings() {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
-        <Image source={{ uri: profileImageUrl }} style={styles.profileImage} />
-        <Ionicons name="ios-pencil" size={24} style={styles.editIcon} />
-      </TouchableOpacity>
-      {uploadProgress > 0 &&
-        uploadProgress < 100 && ( // Only show when uploading
+    <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
+          <Image
+            source={{ uri: profileImageUrl }}
+            style={styles.profileImage}
+          />
+          <Ionicons name="ios-pencil" size={24} style={styles.editIcon} />
+        </TouchableOpacity>
+        {uploadProgress > 0 && uploadProgress < 100 && (
           <Text style={styles.progressText}>
             Upload Progress: {Math.round(uploadProgress)}%
           </Text>
         )}
-      <Text style={styles.accountBalance}>Your Account Balance: 100</Text>
-
-      <View style={styles.row}>
-        <Card title="Language" iconName="ios-globe" />
-        <Card title="Color Mode" iconName="ios-color-palette" />
+        <Text style={styles.accountBalance}>
+          {i18n.t("YourAccountBalance")} : 100 ₹
+        </Text>
+        <View style={styles.row}>
+          <Card
+            title={i18n.t("Language")}
+            iconName="ios-globe"
+            onPress={toggleLanguage}
+          />
+          <Card title={i18n.t("Color Mode")} iconName="ios-color-palette" />
+        </View>
+        <View style={styles.row}>
+          <Card title={i18n.t("Privacy Policy")} iconName="ios-lock-closed" />
+          <Card
+            title={i18n.t("Terms & Conditions")}
+            iconName="ios-document-text"
+          />
+        </View>
+        <View style={styles.row}>
+          <Card title={i18n.t("Rate")} iconName="ios-star" />
+          <Card title={i18n.t("Share")} iconName="ios-share" />
+        </View>
+        <View style={styles.row}>
+          <Card title={i18n.t("Withdraw Now")} iconName="wallet" />
+          <Card title={i18n.t("Withdraw History")} iconName="time" />
+        </View>
       </View>
-
-      <View style={styles.row}>
-        <Card title="Privacy Policy" iconName="ios-lock-closed" />
-        <Card title="Terms & Conditions" iconName="ios-document-text" />
-      </View>
-      <View style={styles.row}>
-        <Card title="Withdraw Now" iconName="wallet" />
-        <Card title="Withdraw History" iconName="time" />
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
-const Card = ({ title, iconName }) => (
-  <TouchableOpacity style={styles.card}>
+const Card = ({ title, iconName, onPress }) => (
+  <TouchableOpacity style={styles.card} onPress={onPress}>
     {iconName && <Ionicons name={iconName} size={24} color="black" />}
     <Text style={styles.cardTitle}>{title}</Text>
   </TouchableOpacity>

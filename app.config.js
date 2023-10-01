@@ -12,6 +12,13 @@ export default {
       resizeMode: "contain",
       backgroundColor: "#ffffff",
     },
+    extra: {
+      supportsRTL: true,
+    },
+    locales: {
+      ta: "./locales/tamil.json",
+    },
+    plugins: ["expo-localization"],
     updates: {
       fallbackToCacheTimeout: 0,
     },

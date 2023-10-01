@@ -20,6 +20,10 @@ import PdfViewer from "./screens/PdfViewer";
 import Quiz from "./screens/Quiz";
 import OnboardingScreen from "./screens/Onboarding";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { I18nManager } from "react-native";
+import * as Localization from "expo-localization";
+import i18n from "./locales/i18n";
+import LanguageContext from "./context/LanguageContext";
 
 const Stack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -87,13 +91,13 @@ function ChatBottomTabNavigator() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === "Home") {
+          if (route.name === i18n.t("Home")) {
             iconName = focused ? "ios-home" : "ios-home-outline";
           } else if (route.name === "Chat") {
             iconName = focused ? "ios-chatbubble" : "ios-chatbubble-outline";
-          } else if (route.name === "Settings") {
+          } else if (route.name === i18n.t("Settings")) {
             iconName = focused ? "ios-settings" : "ios-settings-outline";
-          } else if (route.name === "Notifications") {
+          } else if (route.name === i18n.t("Notifications")) {
             iconName = focused
               ? "ios-notifications"
               : "ios-notifications-outline";
@@ -107,10 +111,13 @@ function ChatBottomTabNavigator() {
         inactiveTintColor: "gray",
       }}
     >
-      <BottomTab.Screen name="Home" component={Home} />
+      <BottomTab.Screen name={i18n.t("Home")} component={Home} />
       <BottomTab.Screen name="Chat" component={Chat} />
-      <BottomTab.Screen name="Notifications" component={Notifications} />
-      <BottomTab.Screen name="Settings" component={Settings} />
+      <BottomTab.Screen
+        name={i18n.t("Notifications")}
+        component={Notifications}
+      />
+      <BottomTab.Screen name={i18n.t("Settings")} component={Settings} />
     </BottomTab.Navigator>
   );
 }
@@ -155,6 +162,8 @@ function RootNavigator() {
 
 export default function App() {
   const [isFirstLaunch, setIsFirstLaunch] = useState(null);
+  const [language, setLanguage] = useState(i18n.locale);
+
   useEffect(() => {
     // Here, you can check from AsyncStorage if the user has launched the app before.
     // I'm assuming the key is 'alreadyLaunched'. If they haven't, display Onboarding.
@@ -175,7 +184,9 @@ export default function App() {
   } else {
     return (
       <AuthenticatedUserProvider>
-        <RootNavigator />
+        <LanguageContext.Provider value={{ language, setLanguage }}>
+          <RootNavigator />
+        </LanguageContext.Provider>
       </AuthenticatedUserProvider>
     );
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -13,11 +13,18 @@ import Carousel from "react-native-snap-carousel";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import i18n from "../locales/i18n";
+import LanguageContext from "../context/LanguageContext";
 
 const { width: screenWidth } = Dimensions.get("window");
 
 export default function Home() {
   const navigation = useNavigation();
+  const { language } = useContext(LanguageContext);
+
+  useEffect(() => {
+    i18n.locale = language;
+  }, [language]);
 
   const [bannerImages, setBannerImages] = useState([]);
 
@@ -81,7 +88,7 @@ export default function Home() {
             }}
           >
             <Ionicons name={ICONS[index]} size={24} color="blue" />
-            <Text style={styles.cardTitle}>{title}</Text>
+            <Text style={styles.cardTitle}>{i18n.t(title)}</Text>
             <Ionicons
               name="ios-arrow-forward"
               size={24}
