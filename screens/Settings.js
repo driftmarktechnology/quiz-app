@@ -1,14 +1,117 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo's vector icons
+import { auth, getFirestore } from "../config/firebase";
 
 function Settings() {
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [profileImageUrl, setProfileImageUrl] = useState(
+    "https://www.w3schools.com/w3images/avatar2.png"
+  );
+
+  useEffect(() => {
+    // Fetch the image URL once when the component mounts
+    fetchProfileImage();
+  }, []);
+
+  const fetchProfileImage = async () => {
+    const db = getFirestore();
+    const email = auth.currentUser.email;
+
+    const docRef = doc(db, "users", email);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      setProfileImageUrl(docSnap.data().profileImageUrl);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      uploadImageToFirebase(result.uri);
+    }
+  };
+
+  const uploadImageToFirebase = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const filename = new Date().getTime(); // Just a simple timestamp as a name
+
+    const storage = getStorage();
+
+    const storageRef = ref(storage, `profile_images/${filename}`);
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // You can use this part for tracking progress
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        setUploadProgress(progress);
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+        console.error(error);
+        alert("There was an issue uploading the image. Please try again.");
+      },
+      () => {
+        // Handle successful uploads on complete
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log("File available at", downloadURL);
+          setProfileImageUrl(downloadURL);
+
+          // Save this imageURL to Firestore under the user's email
+          const db = getFirestore();
+          const email = auth.currentUser.email;
+
+          setDoc(doc(db, "users", email), {
+            profileImageUrl: downloadURL,
+          });
+        });
+      }
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Image
-        source={{ uri: "https://www.w3schools.com/w3images/avatar2.png" }}
-        style={styles.profileImage}
-      />
+      <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
+        <Image source={{ uri: profileImageUrl }} style={styles.profileImage} />
+        <Ionicons name="ios-pencil" size={24} style={styles.editIcon} />
+      </TouchableOpacity>
+      {uploadProgress > 0 &&
+        uploadProgress < 100 && ( // Only show when uploading
+          <Text style={styles.progressText}>
+            Upload Progress: {Math.round(uploadProgress)}%
+          </Text>
+        )}
       <Text style={styles.accountBalance}>Your Account Balance: 100</Text>
 
       <View style={styles.row}>
@@ -37,7 +140,6 @@ const Card = ({ title, iconName }) => (
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
@@ -79,6 +181,25 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  imageContainer: {
+    position: "relative",
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+  editIcon: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 2,
+  },
+  progressText: {
+    textAlign: "center",
+    marginVertical: 10,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
