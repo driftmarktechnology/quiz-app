@@ -88,7 +88,7 @@ export default function Home() {
                 navigation.navigate("Books");
               }
 
-              if (i18n.t(title) === i18n.t("Jobs")) {
+              if (i18n.t(title) === i18n.t("Exam")) {
                 navigation.navigate("Quiz");
               }
 

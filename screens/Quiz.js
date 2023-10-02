@@ -6,10 +6,12 @@ import {
   Modal,
   StyleSheet,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { BackHandler } from "react-native";
 import i18n from "../locales/i18n";
+import { Bar } from "react-native-progress";
 
 const Quiz = ({ navigation }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -84,44 +86,62 @@ const Quiz = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-
-      <Text style={styles.quizTitle}>Quiz Challenge</Text>
+      <View>
+        <Bar
+          progress={
+            questions.length ? (currentQuestionIndex + 1) / questions.length : 0
+          }
+          width={null}
+          height={10}
+          color="#3498DB"
+          unfilledColor="#ecf0f1"
+          borderWidth={0}
+          borderRadius={5}
+        />
+        <Text style={styles.progressCount}>
+          {currentQuestionIndex + 1}/{questions.length}
+        </Text>
+      </View>
 
       <View style={styles.header}>
-        <Text style={styles.timerContainer}>
-          <Text style={styles.timerValue}>
-            {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, "0")}{" "}
-            minutes
-          </Text>
-        </Text>
-
-        <View style={[styles.questionContainer, styles.card]}>
-          <Text style={styles.question}>
+        {questions && questions.length === 0 ? (
+          <ActivityIndicator size="large" color="#3498DB" />
+        ) : (
+          <>
+            <Text style={styles.timerContainer}>
+              <Text style={styles.timerValue}>
+                {Math.floor(timer / 60)}:
+                {(timer % 60).toString().padStart(2, "0")} minutes
+              </Text>
+            </Text>
+            <View style={[styles.questionContainer, styles.card]}>
+              <Text style={styles.question}>
+                {questions &&
+                  questions.length > 0 &&
+                  questions[currentQuestionIndex].questions}
+              </Text>
+            </View>
             {questions &&
               questions.length > 0 &&
-              questions[currentQuestionIndex].questions}
-          </Text>
-        </View>
-
-        {questions &&
-          questions.length > 0 &&
-          questions[currentQuestionIndex].options.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.optionWhite,
-                userAnswers[currentQuestionIndex] === option && {
-                  backgroundColor: "#ecf0f1",
-                  borderColor: "blue",
-                },
-              ]}
-              onPress={() => handleAnswer(option)}
-            >
-              <Text style={styles.optionTextBlack}>
-                {String.fromCharCode(65 + index)}. {option}
-              </Text>
-            </TouchableOpacity>
-          ))}
+              questions[currentQuestionIndex].options.map((option, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.optionWhite,
+                    userAnswers[currentQuestionIndex] === option && {
+                      backgroundColor: "#ecf0f1",
+                      borderColor: "blue",
+                    },
+                  ]}
+                  onPress={() => handleAnswer(option)}
+                >
+                  <Text style={styles.optionTextBlack}>
+                    {String.fromCharCode(65 + index)}. {option}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+          </>
+        )}
       </View>
 
       <View style={styles.controls}>
@@ -219,9 +239,11 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   header: {
-    flex: 2, // Adjusted for more space
-    justifyContent: "space-evenly", // Added for better alignment
+    flex: 2,
+    justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   timer: {
     fontSize: 18,
@@ -421,6 +443,12 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  progressCount: {
+    textAlign: "right",
+    fontSize: 16,
+    color: "#2c3e50",
+    marginBottom: 5, // or any space you want between the text and the Bar
   },
 });
 
