@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import {
   getFirestore,
@@ -14,10 +15,25 @@ import {
   where,
 } from "firebase/firestore";
 import { auth } from "../config/firebase";
+import {
+  RewardedAd,
+  RewardedAdEventType,
+  TestIds,
+} from "react-native-google-mobile-ads";
+
+const adUnitId = __DEV__
+  ? TestIds.REWARDED
+  : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
+
+const rewarded = RewardedAd.createForAdRequest(adUnitId, {
+  requestNonPersonalizedAdsOnly: true,
+  keywords: ["fashion", "clothing"],
+});
 
 function WithdrawHistory() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [adLoaded, setAdLoaded] = useState(false);
   const db = getFirestore();
 
   useEffect(() => {
@@ -41,7 +57,34 @@ function WithdrawHistory() {
     };
 
     fetchRequests();
+
+    // Load the ad
+    const unsubscribeLoaded = rewarded.addAdEventListener(
+      RewardedAdEventType.LOADED,
+      () => {
+        setAdLoaded(true);
+      }
+    );
+    const unsubscribeEarned = rewarded.addAdEventListener(
+      RewardedAdEventType.EARNED_REWARD,
+      (reward) => {
+        console.log("User earned reward of ", reward);
+      }
+    );
+
+    rewarded.load();
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeEarned();
+    };
   }, []);
+
+  useEffect(() => {
+    if (adLoaded) {
+      rewarded.show();
+    }
+  }, [adLoaded]);
 
   if (loading) {
     return (

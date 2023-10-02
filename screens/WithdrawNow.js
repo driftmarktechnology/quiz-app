@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,25 +14,56 @@ import {
 } from "react-native";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  collection,
-  addDoc,
-} from "firebase/firestore";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { auth } from "../config/firebase";
 import {
   BannerAd,
   TestIds,
   BannerAdSize,
+  InterstitialAd,
+  AdEventType,
 } from "react-native-google-mobile-ads";
 
 const { width: screenWidth } = Dimensions.get("window");
+const interstitial = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+  requestNonPersonalizedAdsOnly: true,
+  keywords: ["fashion", "clothing"],
+});
 
 function WithdrawNow({ navigation }) {
   const db = getFirestore();
-  const [loading, setLoading] = useState(false); // New state for tracking loading
+  const [loading, setLoading] = useState(false);
+  const [adLoaded, setAdLoaded] = useState(false);
+
+  useEffect(() => {
+    // Ad events
+    const unsubscribeLoaded = interstitial.addAdEventListener(
+      AdEventType.LOADED,
+      () => {
+        setAdLoaded(true);
+      }
+    );
+
+    const unsubscribeError = interstitial.addAdEventListener(
+      AdEventType.ERROR,
+      (error) => {
+        console.error("Interstitial Ad Error: ", error);
+      }
+    );
+
+    interstitial.load();
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeError();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (adLoaded) {
+      interstitial.show();
+    }
+  }, [adLoaded]);
 
   const formik = useFormik({
     initialValues: { upiID: "", amount: "" },
@@ -44,10 +75,9 @@ function WithdrawNow({ navigation }) {
         .integer("Amount should be an integer"),
     }),
     onSubmit: async (values) => {
-      setLoading(true); // Start loading
+      setLoading(true);
       try {
         const currentDate = new Date();
-
         const collectionRef = collection(db, "withdrawRequest");
         await addDoc(collectionRef, {
           upiID: values.upiID,
@@ -57,12 +87,9 @@ function WithdrawNow({ navigation }) {
           time: currentDate.toLocaleTimeString(),
           status: "pending",
         });
-
         Alert.alert(
           "Withdrawal Request",
-          "Your withdrawal request has been successfully submitted! We'll process it shortly.",
-          [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-          { cancelable: false }
+          "Your withdrawal request has been successfully submitted!"
         );
         formik.resetForm();
       } catch (error) {
@@ -71,7 +98,7 @@ function WithdrawNow({ navigation }) {
           "There was an issue with the withdrawal request. Please try again."
         );
       } finally {
-        setLoading(false); // Stop loading on both success and error
+        setLoading(false);
       }
     },
   });
@@ -81,7 +108,6 @@ function WithdrawNow({ navigation }) {
       <ScrollView style={styles.container}>
         <View style={styles.content}>
           <Text style={styles.headerText}>Withdraw Funds</Text>
-
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -90,11 +116,10 @@ function WithdrawNow({ navigation }) {
               onChangeText={formik.handleChange("upiID")}
               onBlur={formik.handleBlur("upiID")}
             />
-            {formik.touched.upiID && formik.errors.upiID ? (
+            {formik.touched.upiID && formik.errors.upiID && (
               <Text style={styles.errorText}>{formik.errors.upiID}</Text>
-            ) : null}
+            )}
           </View>
-
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -104,18 +129,17 @@ function WithdrawNow({ navigation }) {
               onBlur={formik.handleBlur("amount")}
               keyboardType="numeric"
             />
-            {formik.touched.amount && formik.errors.amount ? (
+            {formik.touched.amount && formik.errors.amount && (
               <Text style={styles.errorText}>{formik.errors.amount}</Text>
-            ) : null}
+            )}
           </View>
-
           <TouchableOpacity
             style={styles.button}
             onPress={formik.handleSubmit}
-            disabled={loading} // Disable the button when loading
+            disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator size="small" color="#fff" /> // Show loader when loading
+              <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text style={styles.buttonText}>Request Withdrawal</Text>
             )}

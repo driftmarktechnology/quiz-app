@@ -24,7 +24,6 @@ import LanguageContext from "../context/LanguageContext";
 import { useNavigation } from "@react-navigation/native";
 import ThemeContext from "../context/ThemeContext";
 import { signOut } from "firebase/auth";
-import { useInterstitialAd, TestIds } from "react-native-google-mobile-ads";
 
 function Settings() {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.locale);
@@ -132,14 +131,6 @@ function Settings() {
     navigation.navigate("WithdrawNow");
   };
 
-  const redirectHistory = () => {
-    if (isLoaded) {
-      show();
-    } else {
-      navigation.navigate("WithdrawHistory");
-    }
-  };
-
   const redirectPrivacy = () => {
     navigation.navigate("Privacy");
   };
@@ -190,24 +181,9 @@ function Settings() {
     signOut(auth).catch((error) => console.log("Error logging out: ", error));
   };
 
-  const { isLoaded, isClosed, load, show } = useInterstitialAd(
-    TestIds.INTERSTITIAL,
-    {
-      requestNonPersonalizedAdsOnly: true,
-    }
-  );
-
-  useEffect(() => {
-    // Start loading the interstitial straight away
-    load();
-  }, [load]);
-
-  useEffect(() => {
-    if (isClosed) {
-      // Action after the ad is closed
-      navigation.navigate("NextScreen");
-    }
-  }, [isClosed, navigation]);
+  const redirectHistory = () => {
+    navigation.navigate("WithdrawHistory");
+  };
 
   return (
     <ScrollView style={dynamicStyles.container}>
