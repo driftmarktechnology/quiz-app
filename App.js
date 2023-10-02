@@ -32,6 +32,7 @@ import ThemeProvider from "./context/ThemeProvider";
 import ForgotPassword from "./screens/ ForgotPassword";
 import Notes from "./screens/Notes";
 import NotesList from "./screens/NotesList";
+import registerNNPushToken from "native-notify";
 
 const Stack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -206,6 +207,8 @@ function RootNavigator() {
 }
 
 export default function App() {
+  registerNNPushToken(12874, "HcvhdjYzdUss7wxUAw30cG");
+
   const [isFirstLaunch, setIsFirstLaunch] = useState(null);
   const [language, setLanguage] = useState(i18n.locale);
 
