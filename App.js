@@ -30,6 +30,8 @@ import Privacy from "./screens/Privacy";
 import Contact from "./screens/Contact";
 import ThemeProvider from "./context/ThemeProvider";
 import ForgotPassword from "./screens/ ForgotPassword";
+import Notes from "./screens/Notes";
+import NotesList from "./screens/NotesList";
 
 const Stack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -103,6 +105,18 @@ function MainStackNavigator() {
         name="Contact"
         component={Contact}
         options={{ headerTitle: "Contact" }}
+      />
+
+      <Stack.Screen
+        name="Notes"
+        component={Notes}
+        options={{ headerTitle: "Notes" }}
+      />
+
+      <Stack.Screen
+        name="NotesList"
+        component={NotesList}
+        options={{ headerTitle: "NotesList" }}
       />
 
       <Stack.Screen

@@ -30,15 +30,9 @@ export default function Home() {
 
   const [bannerImages, setBannerImages] = useState([]);
 
-  const CARD_TITLES = ["Books", "Jobs", "Settings", "Notifications", "Profile"];
+  const CARD_TITLES = ["Books", "Jobs", "Notes"];
 
-  const ICONS = [
-    "ios-book-outline",
-    "briefcase-outline",
-    "ios-settings-outline",
-    "ios-notifications-outline",
-    "ios-person-outline",
-  ];
+  const ICONS = ["ios-book-outline", "briefcase-outline", "md-document-text"];
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -90,12 +84,16 @@ export default function Home() {
             key={index}
             style={styles.card}
             onPress={() => {
-              if (title === "Books") {
+              if (i18n.t(title) === i18n.t("Books")) {
                 navigation.navigate("Books");
               }
 
-              if (title === "Jobs") {
+              if (i18n.t(title) === i18n.t("Jobs")) {
                 navigation.navigate("Quiz");
+              }
+
+              if (i18n.t(title) === i18n.t("Notes")) {
+                navigation.navigate("NotesList");
               }
             }}
           >

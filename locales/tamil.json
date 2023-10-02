@@ -37,5 +37,7 @@
   "Invalid email address": "தவறான மின்னஞ்சல் முகவரி",
   "Password must be at least 6 characters": "கடவுச்சொல் குறைந்தபட்சம் 6 எழுத்துக்களாக இருக்க வேண்டும்",
   "Skip": "புறக்கணி",
-  "Next": "அடுத்து"
+  "Next": "அடுத்து",
+  "Notes": "குறிப்புகள்",
+  "Questions": "கேள்விகள்"
 }
