@@ -8,13 +8,22 @@ import {
   StatusBar,
 } from "react-native";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { BackHandler } from "react-native";
+import i18n from "../locales/i18n";
 
-function Quiz() {
+const Quiz = ({ navigation }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [timer, setTimer] = useState(60); // 60 seconds for each question
+  const [timer, setTimer] = useState(0);
   const [questions, setQuestions] = useState([]);
+  const [showCloseQuizModal, setShowCloseQuizModal] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => null,
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -29,19 +38,28 @@ function Quiz() {
     fetchQuestions();
   }, []);
 
+  useEffect(() => {
+    const backAction = () => {
+      setShowCloseQuizModal(true);
+      return true; // This will prevent the default back button action
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   const [userAnswers, setUserAnswers] = useState(
     Array(questions.length).fill(null)
   );
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimer((prevTimer) => prevTimer - 1);
+      setTimer((prevTimer) => prevTimer + 1);
     }, 1000);
-
-    if (timer === 0) {
-      clearInterval(interval);
-      handleAnswer(null);
-    }
 
     return () => clearInterval(interval);
   }, [timer]);
@@ -71,8 +89,10 @@ function Quiz() {
 
       <View style={styles.header}>
         <Text style={styles.timerContainer}>
-          <Text style={styles.timerLabel}>Time left: </Text>
-          <Text style={styles.timerValue}>{timer} seconds</Text>
+          <Text style={styles.timerValue}>
+            {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, "0")}{" "}
+            minutes
+          </Text>
         </Text>
 
         <View style={[styles.questionContainer, styles.card]}>
@@ -140,23 +160,57 @@ function Quiz() {
 
       <Modal visible={showModal} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
-          <Text style={styles.modalText}>
-            Correct Answers: {correctAnswers}
-          </Text>
-          <Text style={styles.modalText}>
-            Incorrect Answers: {questions.length - correctAnswers}
-          </Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowModal(false)}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalText}>
+              Correct Answers: {correctAnswers}
+            </Text>
+            <Text style={styles.modalText}>
+              Incorrect Answers: {questions.length - correctAnswers}
+            </Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => {
+                setShowModal(false);
+                navigation.navigate(i18n.t("Home")); // Assuming 'Home' is the name of your home screen in the navigator
+              }}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showCloseQuizModal}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalText}>
+              Are you sure you want to close the Quiz?
+            </Text>
+            <TouchableOpacity
+              style={styles.yesButton}
+              onPress={() => {
+                setShowCloseQuizModal(false);
+                setShowModal(true);
+              }}
+            >
+              <Text style={styles.closeButtonText}>Yes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowCloseQuizModal(false)}
+            >
+              <Text style={styles.closeButtonText}>No</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -320,6 +374,53 @@ const styles = StyleSheet.create({
   disabledButton: {
     backgroundColor: "#bdc3c7", // A grayish color to indicate the button is disabled
     borderColor: "#95a5a6",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Darker opacity
+  },
+  modalBox: {
+    // New style for modal box
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    fontSize: 22, // Reduced font size for better UI
+    color: "black",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: "#e74c3c",
+    padding: 10,
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    margin: 10, // Added margin for spacing
+  },
+  yesButton: {
+    // Separate style for 'yes' to give a different color
+    backgroundColor: "#3498DB",
+    padding: 10,
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    margin: 10,
+  },
+  closeButtonText: {
+    color: "white",
+    fontSize: 16,
   },
 });
 

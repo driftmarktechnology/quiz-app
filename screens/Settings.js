@@ -408,6 +408,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
     padding: 10,
+    paddingBottom: 80,
   },
 });
 
