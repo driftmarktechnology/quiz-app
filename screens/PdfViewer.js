@@ -1,46 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
-import * as WebBrowser from "expo-web-browser";
+import React, { useLayoutEffect, useState } from "react";
+import { View, StyleSheet } from "react-native";
 
+import { WebView } from "react-native-webview";
 import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  listAll,
-} from "firebase/storage";
+  BannerAd,
+  TestIds,
+  BannerAdSize,
+} from "react-native-google-mobile-ads";
 
-function PdfViewer() {
+function PdfViewer({ route }) {
   const [pdfUrl, setPdfUrl] = useState(null);
 
-  async function fetchPdfUrl() {
-    const storage = getStorage();
-    const pdfRef = ref(storage, "6.pdf"); // Assuming the PDF is in a folder called 'pdfs' and is named '6.pdf'
-
-    getDownloadURL(pdfRef)
-      .then((url) => {
-        setPdfUrl(url);
-      })
-      .catch((error) => {
-        console.error("Error fetching PDF from Firebase Storage:", error);
-      });
-  }
-
-  const handleOpenWithWebBrowser = async () => {
-    await WebBrowser.openBrowserAsync(pdfUrl);
-  };
-
-  useEffect(() => {
-    fetchPdfUrl();
-  }, []);
+  useLayoutEffect(() => {
+    const { question } = route.params;
+    const googleDriveUrl = `https://drive.google.com/viewerng/viewer?embedded=true&url=${question?.questionpaper?.url}`;
+    setPdfUrl(googleDriveUrl);
+  }, [route.params]);
 
   return (
     <View style={styles.container}>
-      {pdfUrl ? (
-        <Button title="Open PDF" onPress={handleOpenWithWebBrowser} />
-      ) : (
-        <Text>Loading or failed to load PDF...</Text>
-      )}
+      <WebView style={styles.container} source={{ uri: pdfUrl }} />
+      <BannerAd size={BannerAdSize.BANNER} unitId={TestIds.BANNER} />
     </View>
   );
 }
@@ -48,9 +28,6 @@ function PdfViewer() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
 

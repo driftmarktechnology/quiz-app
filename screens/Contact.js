@@ -6,6 +6,11 @@ import {
   StyleSheet,
   Linking,
 } from "react-native";
+import {
+  BannerAd,
+  TestIds,
+  BannerAdSize,
+} from "react-native-google-mobile-ads";
 
 function Contact() {
   const handleEmailPress = () => {
@@ -48,6 +53,7 @@ function Contact() {
           <Text style={styles.contactInfo}>+1234567890</Text>
         </TouchableOpacity>
       </View>
+      <BannerAd size={BannerAdSize.BANNER} unitId={TestIds.BANNER} />
     </View>
   );
 }
