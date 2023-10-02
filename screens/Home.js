@@ -30,9 +30,9 @@ export default function Home() {
 
   const [bannerImages, setBannerImages] = useState([]);
 
-  const CARD_TITLES = ["Books", "Jobs", "Notes"];
+  const CARD_TITLES = ["Books", "Exam", "Notes"];
 
-  const ICONS = ["ios-book-outline", "briefcase-outline", "md-document-text"];
+  const ICONS = ["ios-book-outline", "pencil-outline", "md-document-text"];
 
   useEffect(() => {
     const fetchBanners = async () => {

@@ -34,13 +34,20 @@ function Contact() {
     <View style={styles.container}>
       <Text style={styles.header}>Contact Us</Text>
 
-      <TouchableOpacity style={styles.contactOption} onPress={handleEmailPress}>
-        <Text style={styles.contactText}>Email: example@example.com</Text>
-      </TouchableOpacity>
+      <View style={styles.card}>
+        <TouchableOpacity onPress={handleEmailPress}>
+          <Text style={styles.contactLabel}>Email</Text>
+          <Text style={styles.contactInfo}>example@example.com</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.contactOption} onPress={handlePhonePress}>
-        <Text style={styles.contactText}>Phone: +1234567890</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handlePhonePress}
+          style={styles.phoneContainer}
+        >
+          <Text style={styles.contactLabel}>Phone</Text>
+          <Text style={styles.contactInfo}>+1234567890</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -48,27 +55,44 @@ function Contact() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f9f9f9",
     padding: 20,
     justifyContent: "center",
   },
   header: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: "bold",
     marginBottom: 40,
     textAlign: "center",
     color: "#3498db",
   },
-  contactOption: {
+  card: {
     backgroundColor: "#fff",
     padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
     elevation: 5,
-    alignItems: "center",
   },
-  contactText: {
-    fontSize: 20,
+  contactLabel: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#7f8c8d",
+    marginBottom: 5,
+  },
+  contactInfo: {
+    fontSize: 22,
+    fontWeight: "500",
+    color: "#2c3e50",
+    borderBottomWidth: 1,
+    borderBottomColor: "#bdc3c7",
+    paddingBottom: 10,
+    marginBottom: 15,
+  },
+  phoneContainer: {
+    marginTop: 10,
   },
 });
 
