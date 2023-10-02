@@ -19,6 +19,7 @@ import { auth } from "../config/firebase";
 const backImage = require("../assets/backImage.jpg");
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import i18n from "../locales/i18n";
 
 export default function Signup({ navigation }) {
   const [isLoading, setIsLoading] = useState(false); // State to track submission
@@ -40,11 +41,11 @@ export default function Signup({ navigation }) {
     initialValues: { email: "", password: "" },
     validationSchema: Yup.object({
       email: Yup.string()
-        .email("Invalid email address")
-        .required("This field is Required"),
+        .email(i18n.t("Invalid email address"))
+        .required(i18n.t("This field is Required")),
       password: Yup.string()
-        .min(6, "Password must be at least 6 characters")
-        .required("This field is Required"),
+        .min(6, i18n.t("Password must be at least 6 characters"))
+        .required(i18n.t("This field is Required")),
     }),
     onSubmit: (values) => {
       console.log("Form Submitted with", values);
@@ -58,10 +59,10 @@ export default function Signup({ navigation }) {
         <Image source={backImage} style={styles.backImage} />
         <View style={styles.whiteSheet} />
         <SafeAreaView style={styles.form}>
-          <Text style={styles.title}>Sign Up</Text>
+          <Text style={styles.title}>{i18n.t("Sign Up")}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter email"
+            placeholder={i18n.t("Enter email")}
             autoCapitalize="none"
             keyboardType="email-address"
             textContentType="emailAddress"
@@ -75,7 +76,7 @@ export default function Signup({ navigation }) {
           ) : null}
           <TextInput
             style={styles.input}
-            placeholder="Enter password"
+            placeholder={i18n.t("Enter password")}
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry={true}
@@ -96,7 +97,7 @@ export default function Signup({ navigation }) {
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text style={{ fontWeight: "bold", color: "#fff", fontSize: 18 }}>
-                Sign Up
+                {i18n.t("Sign Up")}
               </Text>
             )}
           </TouchableOpacity>
@@ -109,14 +110,13 @@ export default function Signup({ navigation }) {
             }}
           >
             <Text style={{ color: "gray", fontWeight: "600", fontSize: 14 }}>
-              Don't have an account?{" "}
+              {i18n.t("already I have account?")}
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
               <Text
                 style={{ color: "#f57c00", fontWeight: "600", fontSize: 14 }}
               >
-                {" "}
-                Log In
+                {i18n.t("Login")}
               </Text>
             </TouchableOpacity>
           </View>

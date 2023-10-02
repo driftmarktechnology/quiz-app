@@ -9,6 +9,7 @@ import {
   Image,
   Dimensions,
 } from "react-native";
+import i18n from "../locales/i18n";
 
 const Dots = ({ selected }) => {
   let backgroundColor;
@@ -32,6 +33,8 @@ const OnboardingScreen = ({ navigation }) => {
       DotComponent={Dots}
       onSkip={() => navigation.replace("Home")}
       onDone={() => navigation.replace("Home")}
+      skipLabel={i18n.t("Skip")} // Setting the Skip label
+      nextLabel={i18n.t("Next")}
       pages={[
         {
           backgroundColor: "#a6e4d0",
@@ -42,8 +45,10 @@ const OnboardingScreen = ({ navigation }) => {
               resizeMode="contain"
             />
           ),
-          title: "Start Your Learning Journey",
-          subtitle: "Dive into a world of knowledge with our study app.",
+          title: i18n.t("Start Your Learning Journey"),
+          subtitle: i18n.t(
+            "Dive into a world of knowledge with our study app."
+          ),
         },
         {
           backgroundColor: "#fdeb93",
@@ -54,8 +59,10 @@ const OnboardingScreen = ({ navigation }) => {
               resizeMode="contain"
             />
           ),
-          title: "Tailored Study Plans",
-          subtitle: "Create custom study plans that suit your pace and goals.",
+          title: i18n.t("Tailored Study Plans"),
+          subtitle: i18n.t(
+            "Create custom study plans that suit your pace and goals."
+          ),
         },
         {
           backgroundColor: "#e9bcbe",
@@ -66,9 +73,10 @@ const OnboardingScreen = ({ navigation }) => {
               resizeMode="contain"
             />
           ),
-          title: "Interactive Learning",
-          subtitle:
-            "Engage with interactive content for a better understanding.",
+          title: i18n.t("Interactive Learning"),
+          subtitle: i18n.t(
+            "Engage with interactive content for a better understanding."
+          ),
         },
       ]}
     />

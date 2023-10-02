@@ -19,6 +19,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../config/firebase";
+import i18n from "../locales/i18n";
 
 const backImage = require("../assets/backImage.jpg");
 
@@ -44,7 +45,9 @@ export default function ForgotPassword({ navigation }) {
   const formik = useFormik({
     initialValues: { email: "" },
     validationSchema: Yup.object({
-      email: Yup.string().email("Invalid email address").required("Required"),
+      email: Yup.string()
+        .email(i18n.t("Invalid email address"))
+        .required(i18n.t("This field is Required")),
     }),
     onSubmit: (values) => {
       forgotPassword(values?.email);
@@ -59,10 +62,10 @@ export default function ForgotPassword({ navigation }) {
         <Image source={backImage} style={styles.backImage} />
         <View style={styles.whiteSheet} />
         <SafeAreaView style={styles.form}>
-          <Text style={styles.title}>Forgot Password</Text>
+          <Text style={styles.title}> {i18n.t("Forgot Password")}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter email"
+            placeholder={i18n.t("Enter email")}
             autoCapitalize="none"
             keyboardType="email-address"
             textContentType="emailAddress"
@@ -83,7 +86,7 @@ export default function ForgotPassword({ navigation }) {
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text style={{ fontWeight: "bold", color: "#fff", fontSize: 18 }}>
-                Submit
+                {i18n.t("Submit")}
               </Text>
             )}
           </TouchableOpacity>

@@ -123,7 +123,7 @@ function ChatBottomTabNavigator() {
 
           if (route.name === i18n.t("Home")) {
             iconName = focused ? "ios-home" : "ios-home-outline";
-          } else if (route.name === "Questions") {
+          } else if (route.name === i18n.t("Questions")) {
             iconName = focused ? "help-circle" : "help-circle-outline";
           } else if (route.name === i18n.t("Settings")) {
             iconName = focused ? "ios-settings" : "ios-settings-outline";
@@ -142,7 +142,7 @@ function ChatBottomTabNavigator() {
       }}
     >
       <BottomTab.Screen name={i18n.t("Home")} component={Home} />
-      <BottomTab.Screen name="Questions" component={Questions} />
+      <BottomTab.Screen name={i18n.t("Questions")} component={Questions} />
       <BottomTab.Screen
         name={i18n.t("Notifications")}
         component={Notifications}
