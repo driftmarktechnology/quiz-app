@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "ChatApp",
+    "slug": "ChatApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "extra": {
+      "supportsRTL": true,
+      "apiKey": "YOUR_API_KEY",
+      "authDomain": "YOUR_AUTH_DOMAIN",
+      "projectId": "YOUR_PROJECT_ID",
+      "storageBucket": "YOUR_STORAGE_BUCKET",
+      "messagingSenderId": "YOUR_MESSAGING_SENDER_ID",
+      "appId": "YOUR_APP_ID",
+      "eas": {
+        "projectId": "e4e0e2bc-f766-4b71-921f-b7f8700ec2f4"
+      }
+    },
+    "locales": {
+      "ta": "./locales/tamil.json"
+    },
+    "plugins": ["expo-localization"],
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.driftmark.quizapp",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-7284221130975332~7755297595"
+  }
+}

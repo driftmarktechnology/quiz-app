@@ -22,6 +22,11 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { auth } from "../config/firebase";
+import {
+  BannerAd,
+  TestIds,
+  BannerAdSize,
+} from "react-native-google-mobile-ads";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -115,6 +120,9 @@ function WithdrawNow({ navigation }) {
               <Text style={styles.buttonText}>Request Withdrawal</Text>
             )}
           </TouchableOpacity>
+        </View>
+        <View style={{ width: 100 }}>
+          <BannerAd size={BannerAdSize.BANNER} unitId={TestIds.BANNER} />
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>

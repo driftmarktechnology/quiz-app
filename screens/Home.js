@@ -16,6 +16,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import i18n from "../locales/i18n";
 import LanguageContext from "../context/LanguageContext";
+import {
+  BannerAd,
+  TestIds,
+  BannerAdSize,
+} from "react-native-google-mobile-ads";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -107,6 +112,9 @@ export default function Home() {
             />
           </TouchableOpacity>
         ))}
+        <View style={{ width: 100 }}>
+          <BannerAd size={BannerAdSize.BANNER} unitId={TestIds.BANNER} />
+        </View>
       </ScrollView>
     </View>
   );
