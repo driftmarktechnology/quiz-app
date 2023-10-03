@@ -33,6 +33,7 @@ import ForgotPassword from "./screens/ ForgotPassword";
 import Notes from "./screens/Notes";
 import NotesList from "./screens/NotesList";
 import registerNNPushToken from "native-notify";
+import useFonts from "./context/useFonts";
 
 const Stack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();

@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase";
@@ -20,6 +21,9 @@ const backImage = require("../assets/backImage.jpg");
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import i18n from "../locales/i18n";
+
+const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get("window").width;
 
 export default function Login({ navigation }) {
   const [isLoading, setIsLoading] = useState(false); // State to track submission
@@ -143,7 +147,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 36,
+    fontSize: screenHeight * 0.045,
     fontWeight: "bold",
     color: "orange",
     alignSelf: "center",
@@ -151,7 +155,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: "#F6F7FB",
-    height: 58,
+    height: screenHeight * 0.07,
     marginBottom: 20,
     fontSize: 16,
     borderRadius: 10,
@@ -159,7 +163,7 @@ const styles = StyleSheet.create({
   },
   backImage: {
     width: "100%",
-    height: 240,
+    height: screenHeight * 0.3,
     position: "absolute",
     top: 0,
     resizeMode: "cover",
@@ -175,11 +179,12 @@ const styles = StyleSheet.create({
   form: {
     flex: 1,
     justifyContent: "center",
-    marginHorizontal: 30,
+    marginHorizontal: screenWidth * 0.05, // 5% of screen width
+    marginTop: screenHeight * 0.2, // 20% of screen height
   },
   button: {
     backgroundColor: "#f57c00",
-    height: 58,
+    height: screenHeight * 0.07, // adjust button height based on screen height
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",

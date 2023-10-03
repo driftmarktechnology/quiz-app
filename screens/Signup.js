@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
+  Dimensions,
   TextInput,
   Image,
   SafeAreaView,
@@ -20,6 +20,9 @@ const backImage = require("../assets/backImage.jpg");
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import i18n from "../locales/i18n";
+
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
 export default function Signup({ navigation }) {
   const [isLoading, setIsLoading] = useState(false); // State to track submission
@@ -132,23 +135,23 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 36,
+    fontSize: screenHeight * 0.05, // 5% of screen height
     fontWeight: "bold",
     color: "orange",
     alignSelf: "center",
-    paddingBottom: 24,
+    paddingBottom: screenHeight * 0.03, // 3% of screen height
   },
   input: {
     backgroundColor: "#F6F7FB",
-    height: 58,
-    marginBottom: 20,
-    fontSize: 16,
+    height: screenHeight * 0.07, // 7% of screen height
+    marginBottom: screenHeight * 0.02, // 2% of screen height
+    fontSize: screenHeight * 0.022, // 2.2% of screen height
     borderRadius: 10,
-    padding: 12,
+    padding: screenWidth * 0.03, // 3% of screen width
   },
   backImage: {
     width: "100%",
-    height: 240,
+    height: screenHeight * 0.3, // 30% of screen height
     position: "absolute",
     top: 0,
     resizeMode: "cover",
@@ -159,19 +162,20 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     backgroundColor: "#e7e7e7",
-    borderTopLeftRadius: 60,
+    borderTopLeftRadius: screenHeight * 0.075, // 7.5% of screen height
   },
   form: {
     flex: 1,
     justifyContent: "center",
-    marginHorizontal: 30,
+    marginHorizontal: screenWidth * 0.075, // 7.5% of screen width
+    marginTop: screenHeight * 0.1, // 10% of screen height
   },
   button: {
     backgroundColor: "#f57c00",
-    height: 58,
+    height: screenHeight * 0.075, // 7.5% of screen height
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: screenHeight * 0.05, // 5% of screen height
   },
 });
